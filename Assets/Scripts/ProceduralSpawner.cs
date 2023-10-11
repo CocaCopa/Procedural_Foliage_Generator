@@ -32,9 +32,9 @@ public class ProceduralSpawner : MonoBehaviour {
 
     [Header("--- Parent Folliage ---")]
     [Tooltip("Minimum distance from each parent")]
-    [SerializeField] private float minimumDistance;
+    [SerializeField] public float minimumDistance;
     [Tooltip("Maximum distance from each parent")]
-    [SerializeField] private float maximumDistance;
+    [SerializeField] public float maximumDistance;
     [Tooltip("The spread distance of children foliage around their parent")]
     [SerializeField] public float spreadDistance;
 
@@ -45,9 +45,9 @@ public class ProceduralSpawner : MonoBehaviour {
     [Tooltip("Should the child keep the desired 'distanceFromParent' from all the generated parents or only its own parent?")]
     [SerializeField] private ParentDistanceMode parentDistanceMode;
     [Tooltip("Minimum distance of children foliage from each other")]
-    [SerializeField] private float minDistance;
+    [SerializeField] public float minDistance;
     [Tooltip("Maximum distance of children foliage from each other")]
-    [SerializeField] private float maxDistance;
+    [SerializeField] public float maxDistance;
     [Tooltip("Minimum scale of children foliage")]
     [SerializeField] private float minScale;
     [Tooltip("Maximum scale of children foliage")]

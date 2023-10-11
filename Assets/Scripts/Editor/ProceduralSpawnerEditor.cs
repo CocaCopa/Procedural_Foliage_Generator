@@ -18,10 +18,7 @@ public class ProceduralSpawnerEditor : Editor {
         Buttons();
         BoxColliderKeepEnabled();
         DefaultInformation();
-        if (spawner.distanceFromParent > spawner.spreadDistance) {
-            spawner.distanceFromParent = spawner.spreadDistance - 0.01f;
-            Debug.LogWarning("Distance from parent cannot be more than the spread distance");
-        }
+        ManageValues();
     }
 
     private void Buttons() {
@@ -50,5 +47,21 @@ public class ProceduralSpawnerEditor : Editor {
             spawner.foliageLayer = "Default";
         if (spawner.foliageTag == string.Empty || spawner.foliageTag.Contains(" "))
             spawner.foliageTag = "Untagged";
+    }
+
+    private void ManageValues() {
+        if (spawner.distanceFromParent > spawner.spreadDistance) {
+            spawner.distanceFromParent = spawner.spreadDistance;
+            Debug.LogWarning("Distance from parent cannot be more than the spread distance");
+            Debug.Log("It is recommended to leave a noticeable margin between these 2 values, or else there's a high chance no child foliage will spawn");
+        }
+        if (spawner.minDistance > spawner.maxDistance) {
+            spawner.minDistance = spawner.maxDistance;
+            Debug.LogWarning("Minimum distance cannot be more than the maximum distance");
+        }
+        if (spawner.minimumDistance > spawner.maximumDistance) {
+            spawner.minimumDistance = spawner.maximumDistance;
+            Debug.LogWarning("Minimum distance cannot be more than the maximum distance");
+        }
     }
 }
