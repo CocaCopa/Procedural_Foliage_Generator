@@ -58,10 +58,6 @@ public class ProceduralSpawner : MonoBehaviour {
     private float boxLimitsZ;
     private float raycastDistance;
 
-    /*private readonly string foliageHolderName = "Foliage";
-    private readonly string proceduralLayer = "Procedural";
-    private readonly string foliageTag = "Foliage";*/
-
     public void GenerateFolliage() {
         BoxCollider boxCollider = GetComponent<BoxCollider>();
         raycastDistance = boxCollider.bounds.size.y;
