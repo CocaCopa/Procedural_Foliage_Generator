@@ -1,10 +1,8 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using TreeEditor;
-using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider))]
+[RequireComponent(typeof(BoxCollider), typeof(ProceduralSpawnerGizmos))]
 public class ProceduralSpawner : MonoBehaviour {
 
     [Header("--- Prefabs ---")]
