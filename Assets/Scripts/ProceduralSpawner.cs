@@ -9,10 +9,8 @@ public class ProceduralSpawner : MonoBehaviour {
 
     [Header("--- Prefabs ---")]
     [Tooltip("Prefab to use as parent")]
-    //[SerializeField] private GameObject primitive;
     [SerializeField] private GameObject[] primitives;
     [Tooltip("Prefab to use as child")]
-    //[SerializeField] private GameObject child;
     [SerializeField] private GameObject[] children;
 
     [Header("--- Information ---")]
