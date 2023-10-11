@@ -8,12 +8,20 @@ public class ProceduralSpawnerGizmos : MonoBehaviour {
     private BoxCollider boxCollider;
 
     private void OnDrawGizmos() {
+        GetBoxCollider();
+        DrawBoxColliderGizmo();
+        KeepColliderCentered();
+    }
+
+    private void GetBoxCollider() {
         if (boxCollider == null) {
             boxCollider = GetComponent<BoxCollider>();
         }
+    }
+
+    private void DrawBoxColliderGizmo() {
         Gizmos.color = gizmosColor;
         Gizmos.DrawWireCube(boxCollider.bounds.center, boxCollider.bounds.size);
-        KeepColliderCentered();
     }
 
     private void KeepColliderCentered() {
