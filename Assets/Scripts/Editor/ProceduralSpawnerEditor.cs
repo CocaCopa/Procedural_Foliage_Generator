@@ -10,15 +10,17 @@ public class ProceduralSpawnerEditor : Editor {
     public override void OnInspectorGUI() {
 
         base.OnInspectorGUI();
-
-        if (spawner == null) {
-            spawner = target as ProceduralSpawner;
-        }
-
+        FindTargetScript();
         Buttons();
         BoxColliderKeepEnabled();
         DefaultInformation();
         ManageValues();
+    }
+
+    private void FindTargetScript() {
+        if (spawner == null) {
+            spawner = target as ProceduralSpawner;
+        }
     }
 
     private void Buttons() {
