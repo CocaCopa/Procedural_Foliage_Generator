@@ -66,10 +66,10 @@ public class ProceduralSpawner : MonoBehaviour {
         boxLimitsX = boxCollider.size.x - marginX;
         boxLimitsZ = boxCollider.size.z - marginZ;
 
-        if (primitives != null) {
+        if (primitives.Length > 0) {
             GenerateParents(ref generatedParents);
         }
-        if (primitives != null && children != null) {
+        if (primitives.Length > 0 && children.Length > 0) {
             GenerateChildren(generatedParents);
         }
         boxCollider.enabled = true;
