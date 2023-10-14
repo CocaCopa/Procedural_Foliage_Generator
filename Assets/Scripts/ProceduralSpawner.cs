@@ -61,7 +61,7 @@ public class ProceduralSpawner : MonoBehaviour {
     public List<float> radiiOfParents = new();
     public List<float> radiiOfChildren = new();
     public List<Vector3> positionsOfParents = new();
-    private List<Vector3> positionsOfChildren = new();
+    public List<Vector3> positionsOfChildren = new();
 
     public void GenerateFolliage() {
         Stopwatch stopwatch = new();
