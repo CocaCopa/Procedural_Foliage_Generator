@@ -1,6 +1,8 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using System.Diagnostics;
 
 [RequireComponent(typeof(BoxCollider), typeof(ProceduralSpawnerGizmos))]
 public class ProceduralSpawner : MonoBehaviour {
@@ -38,10 +40,10 @@ public class ProceduralSpawner : MonoBehaviour {
 
     [Header("--- Child Folliage ---")]
     [SerializeField] int numberOfChildren;
-    [Tooltip("Minimum distance of children foliage from their parent")]
-    [SerializeField] public float distanceFromParent;
     [Tooltip("Should the child keep the desired 'distanceFromParent' from all the generated parents or only its own parent?")]
     [SerializeField] private ParentDistanceMode parentDistanceMode;
+    [Tooltip("Minimum distance of children foliage from their parent")]
+    [SerializeField] public float distanceFromParent;
     [Tooltip("Minimum distance of children foliage from each other")]
     [SerializeField] public float minDistance;
     [Tooltip("Maximum distance of children foliage from each other")]
@@ -56,7 +58,17 @@ public class ProceduralSpawner : MonoBehaviour {
     private float boxLimitsZ;
     private float raycastDistance;
 
+    public List<float> radiiOfParents = new();
+    public List<float> radiiOfChildren = new();
+    public List<Vector3> positionsOfParents = new();
+    private List<Vector3> positionsOfChildren = new();
+
     public void GenerateFolliage() {
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
+        positionsOfParents.Clear();
+        radiiOfParents.Clear();
+        positionsOfChildren.Clear();
         BoxCollider boxCollider = GetComponent<BoxCollider>();
         raycastDistance = boxCollider.bounds.size.y;
         List<GameObject> generatedParents = new();
@@ -64,13 +76,17 @@ public class ProceduralSpawner : MonoBehaviour {
         boxLimitsX = boxCollider.size.x - marginX;
         boxLimitsZ = boxCollider.size.z - marginZ;
 
-        if (primitives.Length > 0) {
+        if (primitives.Any()) {
             GenerateParents(ref generatedParents);
-        }
-        if (primitives.Length > 0 && children.Length > 0) {
-            GenerateChildren(generatedParents);
+            if (children.Any() && numberOfChildren > 0) {
+                GenerateChildren(generatedParents);
+            }
         }
         boxCollider.enabled = true;
+
+        stopwatch.Stop();
+        long executionTime = stopwatch.ElapsedMilliseconds;
+        UnityEngine.Debug.Log("Total time: " + executionTime + " milliseconds.");
     }
 
     private void GenerateParents(ref List<GameObject> generatedParents) {
@@ -91,86 +107,94 @@ public class ProceduralSpawner : MonoBehaviour {
             if (OutOfBounds(parentPosition)) {
                 continue;
             }
-
-            if (ShootRayToPosition(out RaycastHit hit, parentPosition, ~spawnOnLayer)) {
+            if (ShootRayToPosition(parentPosition, ~spawnOnLayer)) {
                 continue;
             }
 
             parentPosition.y = CorrectPositionHeight(parentPosition);
-            if (parentPosition.y != Mathf.PI) {
-                int randomParentIndex = Random.Range(0, primitives.Length);
-                GameObject m_obj = Instantiate(primitives[randomParentIndex]);
-                SetObjectValues(m_obj, parent, parentPosition, Vector2.one, new(minimumDistance, maximumDistance));
-                generatedParents.Add(m_obj);
+
+            if (parentPosition.y == Mathf.PI || IsPositionCloseToAnyPosition(parentPosition, positionsOfParents, radiiOfParents)) {
+                continue;
             }
-            //break;
-        }
 
-        //return;
-
-        for (int i = 0; i < generatedParents.Count; i++) {
-            DestroyImmediate(generatedParents[i].GetComponent<SphereCollider>());
+            int randomParentIndex = Random.Range(0, primitives.Length);
+            GameObject m_obj = Instantiate(primitives[randomParentIndex]);
+            SetObjectValues(m_obj, parent, parentPosition, Vector2.one);
+            positionsOfParents.Add(parentPosition);
+            radiiOfParents.Add(Random.Range(minimumDistance, maximumDistance));
+            generatedParents.Add(m_obj);
         }
     }
 
     private void GenerateChildren(List<GameObject> generatedParents) {
         List<GameObject> childrenList = new();
-        for (int i = 0; i < generatedParents.Count; i++) {
+        for (int i = 0; i < positionsOfParents.Count; i++) {
 
             GameObject m_obj = generatedParents[i];
-            Vector3 parentPosition = generatedParents[i].transform.position;
 
             for (int j = 0; j < numberOfChildren; j++) {
 
-                Vector3 childPosition = RandomVectorPointInCircle(parentPosition, spreadDistance);
-                
+                Vector3 childPosition = RandomVectorPointInCircle(positionsOfParents[i], spreadDistance);
+
                 if (OutOfBounds(childPosition)) {
                     continue;
                 }
-
-                switch (parentDistanceMode) {
-                    case ParentDistanceMode.AllParents:
-                    if (TooCloseToParent(generatedParents, childPosition)) {
-                        continue;
-                    }
-                    break;
-                    case ParentDistanceMode.MyParent:
-                    if (Vector3.Distance(childPosition, parentPosition) <= distanceFromParent) {
-                        continue;
-                    }
-                    break;
+                if (ShootRayToPosition(childPosition, ~spawnOnLayer)) {
+                    continue;
+                }
+                if (ChildCloseToParent(childPosition, positionsOfParents[i])) {
+                    continue;
                 }
                 
+                childPosition.y = CorrectPositionHeight(childPosition);
 
-                if (ShootRayToPosition(out RaycastHit hit, childPosition, ~spawnOnLayer)) {
+                if (childPosition.y == Mathf.PI || IsPositionCloseToAnyPosition(childPosition, positionsOfChildren, radiiOfChildren)) {
                     continue;
                 }
 
-                childPosition.y = CorrectPositionHeight(childPosition);
-                if (childPosition.y != Mathf.PI) {
-                    int randomChildIndex = Random.Range(0, children.Length);
-                    GameObject m_child = Instantiate(children[randomChildIndex]);
-                    SetObjectValues(m_child, m_obj, childPosition, new(minScale, maxScale), new(minDistance, maxDistance));
-                    childrenList.Add(m_child);
-                }
+                int randomChildIndex = Random.Range(0, children.Length);
+                GameObject m_child = Instantiate(children[randomChildIndex]);
+                SetObjectValues(m_child, m_obj, childPosition, new(minScale, maxScale));
+                positionsOfChildren.Add(childPosition);
+                radiiOfChildren.Add(Random.Range(minDistance, maxDistance));
+                childrenList.Add(m_child);
             }
-        }
-        
-        for (int i = 0; i < childrenList.Count; i++) {
-            DestroyImmediate(childrenList[i].GetComponent<SphereCollider>());
         }
     }
 
-    private bool TooCloseToParent(List<GameObject> generatedParents, Vector3 position) {
+    private bool ChildCloseToParent(Vector3 childPosition, Vector3 parentPosition) {
+        bool tooClose = false;
+        switch (parentDistanceMode) {
+            case ParentDistanceMode.AllParents:
+            tooClose = IsPositionCloseToAnyPosition(childPosition, positionsOfParents, distanceFromParent);
+            break;
+            case ParentDistanceMode.MyParent:
+            tooClose = Vector3.Distance(childPosition, parentPosition) <= distanceFromParent;
+            break;
+        }
+        return tooClose;
+    }
 
-        bool test = false;
-        for (int i = 0; i < generatedParents.Count; i++) {
-            if (Vector3.Distance(generatedParents[i].transform.position, position) <= distanceFromParent) {
-                test = true;
+    private bool IsPositionCloseToAnyPosition(Vector3 position, List<Vector3> positions, float distance) {
+        bool tooClose = false;
+        for (int i = 0; i < positions.Count; i++) {
+            if (Vector3.Distance(position, positions[i]) <= distance) {
+                tooClose = true;
                 break;
             }
         }
-        return test;
+        return tooClose;
+    }
+
+    private bool IsPositionCloseToAnyPosition(Vector3 position, List<Vector3> positions, List<float> distances) {
+        bool tooClose = false;
+        for (int i = 0; i < positions.Count; i++) {
+            if (Vector3.Distance(position, positions[i]) <= distances[i]) {
+                tooClose = true;
+                break;
+            }
+        }
+        return tooClose;
     }
 
     public void DestroyAll() {
@@ -188,16 +212,21 @@ public class ProceduralSpawner : MonoBehaviour {
         return outOfBoundsUp || outOfBoundsDown || outOfBoundsRight || outOfBoundsLeft;
     }
 
+    private bool ShootRayToPosition(Vector3 checkPosition, int layer) {
+        checkPosition.y = transform.position.y;
+        Ray ray = new(checkPosition + Vector3.up * raycastDistance / 2, Vector3.down);
+        return Physics.Raycast(ray, raycastDistance, layer);
+    }
     private bool ShootRayToPosition(out RaycastHit hit, Vector3 checkPosition, int layer) {
         checkPosition.y = transform.position.y;
-        Ray ray = new(checkPosition + 1000 * Vector3.up * raycastDistance / 2, Vector3.down);
-        return Physics.Raycast(ray, out hit, 1000 * raycastDistance, layer);
+        Ray ray = new(checkPosition + Vector3.up * raycastDistance / 2, Vector3.down);
+        return Physics.Raycast(ray, out hit, raycastDistance, layer);
     }
 
     private float CorrectPositionHeight(Vector3 checkPosition) {
         ShootRayToPosition(out RaycastHit hit, checkPosition, spawnOnLayer);
         if (hit.transform == null) {
-            Debug.LogWarning("Please make sure that the box collider has a valid ground below it.");
+            UnityEngine.Debug.LogWarning("Please make sure that the box collider has a valid ground below it.");
             return Mathf.PI;
         }
         else {
@@ -205,13 +234,10 @@ public class ProceduralSpawner : MonoBehaviour {
         }
     }
 
-    private void SetObjectValues(GameObject childObj, GameObject parentObj, Vector3 position, Vector2 scaleRange, Vector2 distanceRange) {
-
+    private void SetObjectValues(GameObject childObj, GameObject parentObj, Vector3 position, Vector2 scaleRange) {
         childObj.transform.parent = parentObj.transform;
         childObj.transform.position = position;
         childObj.transform.localScale = childObj.transform.localScale.x * Random.Range(scaleRange.x, scaleRange.y) * Vector3.one;
-        SphereCollider childSphere = childObj.AddComponent<SphereCollider>();
-        childSphere.radius = Random.Range(distanceRange.x, distanceRange.y);
         childObj.transform.tag = foliageTag;
         childObj.layer = LayerMask.NameToLayer(foliageLayer);
     }
