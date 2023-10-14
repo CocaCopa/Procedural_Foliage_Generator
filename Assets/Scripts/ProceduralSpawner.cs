@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
+using System.Diagnostics;
 
 [RequireComponent(typeof(BoxCollider), typeof(ProceduralSpawnerGizmos))]
 public class ProceduralSpawner : MonoBehaviour {
@@ -57,6 +58,8 @@ public class ProceduralSpawner : MonoBehaviour {
     private float raycastDistance;
 
     public void GenerateFolliage() {
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
         BoxCollider boxCollider = GetComponent<BoxCollider>();
         raycastDistance = boxCollider.bounds.size.y;
         List<GameObject> generatedParents = new();
@@ -71,6 +74,9 @@ public class ProceduralSpawner : MonoBehaviour {
             GenerateChildren(generatedParents);
         }
         boxCollider.enabled = true;
+        stopwatch.Stop();
+        long executionTime = stopwatch.ElapsedMilliseconds;
+        UnityEngine.Debug.Log("Total Time: " + executionTime + " milliseconds");
     }
 
     private void GenerateParents(ref List<GameObject> generatedParents) {
@@ -197,7 +203,7 @@ public class ProceduralSpawner : MonoBehaviour {
     private float CorrectPositionHeight(Vector3 checkPosition) {
         ShootRayToPosition(out RaycastHit hit, checkPosition, spawnOnLayer);
         if (hit.transform == null) {
-            Debug.LogWarning("Please make sure that the box collider has a valid ground below it.");
+            UnityEngine.Debug.LogWarning("Please make sure that the box collider has a valid ground below it.");
             return Mathf.PI;
         }
         else {
