@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System.Diagnostics;
 
 [RequireComponent(typeof(BoxCollider), typeof(ProceduralSpawnerGizmos))]
 public class ProceduralSpawner : MonoBehaviour {
@@ -15,78 +14,92 @@ public class ProceduralSpawner : MonoBehaviour {
 
     [Header("--- Information ---")]
     [Tooltip("Name of the parent GameObject which it will hold all of the generated foliage")]
-    [SerializeField] public string foliageHolderName;
-    [Tooltip("Layer for the foliage GameObjects")]
-    [SerializeField] public string foliageLayer;
-    [Tooltip("Tag for the foliage GameObjects")]
-    [SerializeField] public string foliageTag;
+    public string foliageHolderName;
+    [Tooltip("The given layer will be assigned to every generated GameObject")]
+    public string foliageLayer;
+    [Tooltip("The given layer will be assigned to every generated GameObject")]
+    public string foliageTag;
 
-    [Header("--- Spawner Settings ---")]
+    [Header("--- Spawner General Settings ---")]
     [SerializeField] private LayerMask spawnOnLayer;
     [Tooltip("Controls the density of foliage in the specified area")]
-    [SerializeField] private int intensity;
+    public int intensity;
     [Tooltip("Cut out 'x' meters of the specified area on the X axis")]
-    [SerializeField] private float marginX;
+    public float marginX;
     [Tooltip("Cut out 'x' meters of the specified area on the Z axis")]
-    [SerializeField] private float marginZ;
+    public float marginZ;
 
     [Header("--- Parent Folliage ---")]
-    [Tooltip("Minimum distance from each parent")]
-    [SerializeField] public float minimumDistance;
-    [Tooltip("Maximum distance from each parent")]
-    [SerializeField] public float maximumDistance;
     [Tooltip("The spread distance of children foliage around their parent")]
-    [SerializeField] public float spreadDistance;
+    public float spreadDistance;
+    [Space(5)]
+    [Tooltip("Distance from each parent, at which other parents cannot spawn")]
+    public float minParentBlankArea;
+    [Tooltip("Distance from each parent, at which other parents cannot spawn")]
+    public float maxParentBlankArea;
 
     [Header("--- Child Folliage ---")]
-    [SerializeField] int numberOfChildren;
+    [Tooltip("Maximum number of children a parent can spawn")]
+    public int numberOfChildren;
+    [Space(5)]
     [Tooltip("Should the child keep the desired 'distanceFromParent' from all the generated parents or only its own parent?")]
     [SerializeField] private ParentDistanceMode parentDistanceMode;
     [Tooltip("Minimum distance of children foliage from their parent")]
-    [SerializeField] public float distanceFromParent;
-    [Tooltip("Minimum distance of children foliage from each other")]
-    [SerializeField] public float minDistance;
-    [Tooltip("Maximum distance of children foliage from each other")]
-    [SerializeField] public float maxDistance;
+    public float distanceFromParent;
+    [Space(5)]
+    [Tooltip("Distance from each child, at which other children cannot spawn")]
+    public float minChildBlankArea;
+    [Tooltip("Distance from each child, at which other children cannot spawn")]
+    public float maxChildBlankArea;
+    [Space(5)]
     [Tooltip("Minimum scale of children foliage")]
-    [SerializeField] private float minScale;
+    public float minScale;
     [Tooltip("Maximum scale of children foliage")]
-    [SerializeField] private float maxScale;
+    public float maxScale;
 
     private enum ParentDistanceMode { AllParents, MyParent };
     private float boxLimitsX;
     private float boxLimitsZ;
     private float raycastDistance;
 
-    public List<float> radiiOfParents = new();
-    public List<float> radiiOfChildren = new();
-    public List<Vector3> positionsOfParents = new();
-    public List<Vector3> positionsOfChildren = new();
+    private List<float> radiiOfParents = new();
+    private List<float> radiiOfChildren = new();
+    private List<Vector3> positionsOfParents = new();
+    private List<Vector3> positionsOfChildren = new();
 
     public void GenerateFolliage() {
-        Stopwatch stopwatch = new();
-        stopwatch.Start();
-        positionsOfParents.Clear();
-        radiiOfParents.Clear();
-        positionsOfChildren.Clear();
-        BoxCollider boxCollider = GetComponent<BoxCollider>();
-        raycastDistance = boxCollider.bounds.size.y;
-        List<GameObject> generatedParents = new();
+        ClearLists();
+        Initialize(out var boxCollider);
         boxCollider.enabled = false;
+        Generate();
+        boxCollider.enabled = true;
+    }
+
+    private void ClearLists() {
+        radiiOfParents.Clear();
+        radiiOfChildren.Clear();
+        positionsOfParents.Clear();
+        positionsOfChildren.Clear();
+    }
+
+    private void Initialize(out BoxCollider boxCollider) {
+        boxCollider = GetComponent<BoxCollider>();
+        raycastDistance = boxCollider.bounds.size.y;
         boxLimitsX = boxCollider.size.x - marginX;
         boxLimitsZ = boxCollider.size.z - marginZ;
+    }
 
-        if (primitives.Any()) {
-            GenerateParents(ref generatedParents);
-            if (children.Any() && numberOfChildren > 0) {
-                GenerateChildren(generatedParents);
-            }
+    private void Generate() {
+        // This list is used to make every generated child, a child object of its generated parent object.
+        List<GameObject> generatedParents = new();
+        if (!primitives.Any()) {
+            return;
         }
-        boxCollider.enabled = true;
-
-        stopwatch.Stop();
-        long executionTime = stopwatch.ElapsedMilliseconds;
-        UnityEngine.Debug.Log("Total time: " + executionTime + " milliseconds.");
+        GenerateParents(ref generatedParents);
+        if (!children.Any() || numberOfChildren == 0) {
+            return;
+        }
+        GenerateChildren(generatedParents);
     }
 
     private void GenerateParents(ref List<GameObject> generatedParents) {
@@ -102,18 +115,18 @@ public class ProceduralSpawner : MonoBehaviour {
 
         for (int i = 0; i < intensity; i++) {
 
-            Vector3 parentPosition = RandomVectorPointInCircle(transform.position, circleRadius);
+            Vector3 parentPosition = Utilities.RandomVectorPointInCircle(transform.position, circleRadius, transform.forward);
             
-            if (OutOfBounds(parentPosition)) {
+            if (Utilities.OutOfBounds(transform, parentPosition, boxLimitsX, boxLimitsZ)) {
                 continue;
             }
-            if (ShootRayToPosition(parentPosition, ~spawnOnLayer)) {
+            if (Utilities.ShootRayToPosition(transform, parentPosition, raycastDistance, ~spawnOnLayer)) {
                 continue;
             }
 
             parentPosition.y = CorrectPositionHeight(parentPosition);
 
-            if (parentPosition.y == Mathf.PI || IsPositionCloseToAnyPosition(parentPosition, positionsOfParents, radiiOfParents)) {
+            if (parentPosition.y == Mathf.PI || Utilities.IsPositionCloseToAnyPosition(parentPosition, positionsOfParents, radiiOfParents)) {
                 continue;
             }
 
@@ -121,25 +134,24 @@ public class ProceduralSpawner : MonoBehaviour {
             GameObject m_obj = Instantiate(primitives[randomParentIndex]);
             SetObjectValues(m_obj, parent, parentPosition, Vector2.one);
             positionsOfParents.Add(parentPosition);
-            radiiOfParents.Add(Random.Range(minimumDistance, maximumDistance));
+            radiiOfParents.Add(Random.Range(minParentBlankArea, maxParentBlankArea));
             generatedParents.Add(m_obj);
         }
     }
 
     private void GenerateChildren(List<GameObject> generatedParents) {
-        List<GameObject> childrenList = new();
         for (int i = 0; i < positionsOfParents.Count; i++) {
 
             GameObject m_obj = generatedParents[i];
 
             for (int j = 0; j < numberOfChildren; j++) {
 
-                Vector3 childPosition = RandomVectorPointInCircle(positionsOfParents[i], spreadDistance);
+                Vector3 childPosition = Utilities.RandomVectorPointInCircle(positionsOfParents[i], spreadDistance, transform.forward);
 
-                if (OutOfBounds(childPosition)) {
+                if (Utilities.OutOfBounds(transform, childPosition, boxLimitsX, boxLimitsZ)) {
                     continue;
                 }
-                if (ShootRayToPosition(childPosition, ~spawnOnLayer)) {
+                if (Utilities.ShootRayToPosition(transform, childPosition, raycastDistance, ~spawnOnLayer)) {
                     continue;
                 }
                 if (ChildCloseToParent(childPosition, positionsOfParents[i])) {
@@ -148,7 +160,7 @@ public class ProceduralSpawner : MonoBehaviour {
                 
                 childPosition.y = CorrectPositionHeight(childPosition);
 
-                if (childPosition.y == Mathf.PI || IsPositionCloseToAnyPosition(childPosition, positionsOfChildren, radiiOfChildren)) {
+                if (childPosition.y == Mathf.PI || Utilities.IsPositionCloseToAnyPosition(childPosition, positionsOfChildren, radiiOfChildren)) {
                     continue;
                 }
 
@@ -156,8 +168,7 @@ public class ProceduralSpawner : MonoBehaviour {
                 GameObject m_child = Instantiate(children[randomChildIndex]);
                 SetObjectValues(m_child, m_obj, childPosition, new(minScale, maxScale));
                 positionsOfChildren.Add(childPosition);
-                radiiOfChildren.Add(Random.Range(minDistance, maxDistance));
-                childrenList.Add(m_child);
+                radiiOfChildren.Add(Random.Range(minChildBlankArea, maxChildBlankArea));
             }
         }
     }
@@ -166,33 +177,11 @@ public class ProceduralSpawner : MonoBehaviour {
         bool tooClose = false;
         switch (parentDistanceMode) {
             case ParentDistanceMode.AllParents:
-            tooClose = IsPositionCloseToAnyPosition(childPosition, positionsOfParents, distanceFromParent);
+            tooClose = Utilities.IsPositionCloseToAnyPosition(childPosition, positionsOfParents, distanceFromParent);
             break;
             case ParentDistanceMode.MyParent:
             tooClose = Vector3.Distance(childPosition, parentPosition) <= distanceFromParent;
             break;
-        }
-        return tooClose;
-    }
-
-    private bool IsPositionCloseToAnyPosition(Vector3 position, List<Vector3> positions, float distance) {
-        bool tooClose = false;
-        for (int i = 0; i < positions.Count; i++) {
-            if (Vector3.Distance(position, positions[i]) <= distance) {
-                tooClose = true;
-                break;
-            }
-        }
-        return tooClose;
-    }
-
-    private bool IsPositionCloseToAnyPosition(Vector3 position, List<Vector3> positions, List<float> distances) {
-        bool tooClose = false;
-        for (int i = 0; i < positions.Count; i++) {
-            if (Vector3.Distance(position, positions[i]) <= distances[i]) {
-                tooClose = true;
-                break;
-            }
         }
         return tooClose;
     }
@@ -202,36 +191,9 @@ public class ProceduralSpawner : MonoBehaviour {
         DestroyImmediate(foliageHolder);
     }
 
-    private bool OutOfBounds(Vector3 point) {
-        Vector3 pointWorldToLocal = transform.InverseTransformPoint(point);
-        bool outOfBoundsUp    = pointWorldToLocal.z - boxLimitsZ / 2 > 0;
-        bool outOfBoundsDown  = pointWorldToLocal.z + boxLimitsZ / 2 < 0;
-        bool outOfBoundsRight = pointWorldToLocal.x - boxLimitsX / 2 > 0;
-        bool outOfBoundsLeft  = pointWorldToLocal.x + boxLimitsX / 2 < 0;
-
-        return outOfBoundsUp || outOfBoundsDown || outOfBoundsRight || outOfBoundsLeft;
-    }
-
-    private bool ShootRayToPosition(Vector3 checkPosition, int layer) {
-        checkPosition.y = transform.position.y;
-        Ray ray = new(checkPosition + Vector3.up * raycastDistance / 2, Vector3.down);
-        return Physics.Raycast(ray, raycastDistance, layer);
-    }
-    private bool ShootRayToPosition(out RaycastHit hit, Vector3 checkPosition, int layer) {
-        checkPosition.y = transform.position.y;
-        Ray ray = new(checkPosition + Vector3.up * raycastDistance / 2, Vector3.down);
-        return Physics.Raycast(ray, out hit, raycastDistance, layer);
-    }
-
     private float CorrectPositionHeight(Vector3 checkPosition) {
-        ShootRayToPosition(out RaycastHit hit, checkPosition, spawnOnLayer);
-        if (hit.transform == null) {
-            UnityEngine.Debug.LogWarning("Please make sure that the box collider has a valid ground below it.");
-            return Mathf.PI;
-        }
-        else {
-            return hit.point.y;
-        }
+        Utilities.ShootRayToPosition(transform, out RaycastHit hit, checkPosition, raycastDistance, spawnOnLayer);
+        return hit.transform == null ? Mathf.PI : hit.point.y;
     }
 
     private void SetObjectValues(GameObject childObj, GameObject parentObj, Vector3 position, Vector2 scaleRange) {
@@ -240,19 +202,6 @@ public class ProceduralSpawner : MonoBehaviour {
         childObj.transform.localScale = childObj.transform.localScale.x * Random.Range(scaleRange.x, scaleRange.y) * Vector3.one;
         childObj.transform.tag = foliageTag;
         childObj.layer = LayerMask.NameToLayer(foliageLayer);
-    }
-
-    private Vector3 RandomVectorPointInCircle(Vector3 center, float radius) {
-
-        Vector3 direction = transform.forward;
-        var vector2 = Random.insideUnitCircle * radius;
-
-        float signedAngle = Vector3.SignedAngle(direction, vector2, Vector3.up);
-        if (signedAngle > 90 || signedAngle < -90) {
-            vector2 = -vector2;
-        }
-
-        return new Vector3(vector2.x, 0, vector2.y) + center;
     }
 }
 #endif
