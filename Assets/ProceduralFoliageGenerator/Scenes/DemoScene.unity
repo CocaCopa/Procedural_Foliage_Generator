@@ -31715,7 +31715,15 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6581010239506387646, guid: 3cac9af576028294c8f1539a379ed225, type: 3}
+      propertyPath: logDistances
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6581010239506387646, guid: 3cac9af576028294c8f1539a379ed225, type: 3}
       propertyPath: runDebugDistances
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6581010239506387646, guid: 3cac9af576028294c8f1539a379ed225, type: 3}
+      propertyPath: replaceInspectedObject
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
