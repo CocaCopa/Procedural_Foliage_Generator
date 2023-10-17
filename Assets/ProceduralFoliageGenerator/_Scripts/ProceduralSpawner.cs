@@ -30,10 +30,10 @@ public class ProceduralSpawner : MonoBehaviour {
     public float marginZ;
 
     [Header("--- Parent Folliage ---")]
-    [Tooltip("The spread distance of children foliage around their parent")]
+    [Tooltip("Distance at which new parents cannot spawn near existing parents.")]
     public float spreadDistance;
     [Space(5)]
-    [Tooltip("Distance from each parent, at which other parents cannot spawn")]
+    [Tooltip("Distance at which new parents cannot spawn near existing parents.")]
     public float minParentBlankArea;
     [Tooltip("Distance from each parent, at which other parents cannot spawn")]
     public float maxParentBlankArea;
@@ -42,14 +42,14 @@ public class ProceduralSpawner : MonoBehaviour {
     [Tooltip("Maximum number of children a parent can spawn")]
     public int numberOfChildren;
     [Space(5)]
-    [Tooltip("Should the child keep the desired 'distanceFromParent' from all the generated parents or only its own parent?")]
+    [Tooltip("Should the child keep the desired 'distanceFromParent' from all of the generated parents or only from its own parent?")]
     [SerializeField] private ParentDistanceMode parentDistanceMode;
     [Tooltip("Minimum distance of children foliage from their parent")]
     public float distanceFromParent;
     [Space(5)]
-    [Tooltip("Distance from each child, at which other children cannot spawn")]
+    [Tooltip("Distance at which new children cannot spawn near existing children.")]
     public float minChildBlankArea;
-    [Tooltip("Distance from each child, at which other children cannot spawn")]
+    [Tooltip("Distance at which new children cannot spawn near existing children.")]
     public float maxChildBlankArea;
     [Space(5)]
     [Tooltip("Minimum scale of children foliage")]
@@ -120,7 +120,7 @@ public class ProceduralSpawner : MonoBehaviour {
             if (Utilities.OutOfBounds(transform, parentPosition, boxLimitsX, boxLimitsZ)) {
                 continue;
             }
-            if (Utilities.ShootRayToPosition(transform, parentPosition, raycastDistance, ~spawnOnLayer)) {
+            if (ShootRayToPosition(parentPosition, raycastDistance, ~spawnOnLayer)) {
                 continue;
             }
 
@@ -151,7 +151,7 @@ public class ProceduralSpawner : MonoBehaviour {
                 if (Utilities.OutOfBounds(transform, childPosition, boxLimitsX, boxLimitsZ)) {
                     continue;
                 }
-                if (Utilities.ShootRayToPosition(transform, childPosition, raycastDistance, ~spawnOnLayer)) {
+                if (ShootRayToPosition(childPosition, raycastDistance, ~spawnOnLayer)) {
                     continue;
                 }
                 if (ChildCloseToParent(childPosition, positionsOfParents[i])) {
@@ -192,7 +192,7 @@ public class ProceduralSpawner : MonoBehaviour {
     }
 
     private float CorrectPositionHeight(Vector3 checkPosition) {
-        Utilities.ShootRayToPosition(transform, out RaycastHit hit, checkPosition, raycastDistance, spawnOnLayer);
+        ShootRayToPosition(out RaycastHit hit, checkPosition, raycastDistance, spawnOnLayer);
         return hit.transform == null ? Mathf.PI : hit.point.y;
     }
 
@@ -202,6 +202,17 @@ public class ProceduralSpawner : MonoBehaviour {
         childObj.transform.localScale = childObj.transform.localScale.x * Random.Range(scaleRange.x, scaleRange.y) * Vector3.one;
         childObj.transform.tag = foliageTag;
         childObj.layer = LayerMask.NameToLayer(foliageLayer);
+    }
+
+    private bool ShootRayToPosition(Vector3 position, float distance, int layer) {
+        position.y = transform.position.y;
+        Ray ray = new(position + Vector3.up * distance / 2, Vector3.down);
+        return Physics.Raycast(ray, distance, layer);
+    }
+    private bool ShootRayToPosition(out RaycastHit hit, Vector3 position, float distance, int layer) {
+        position.y = transform.position.y;
+        Ray ray = new(position + Vector3.up * distance / 2, Vector3.down);
+        return Physics.Raycast(ray, out hit, distance, layer);
     }
 }
 #endif

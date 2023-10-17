@@ -70,15 +70,4 @@ public class Utilities : MonoBehaviour {
         }
         return tooClose;
     }
-
-    public static bool ShootRayToPosition(Transform transform, Vector3 position, float distance, int layer) {
-        position.y = transform.position.y;
-        Ray ray = new(position + Vector3.up * distance / 2, Vector3.down);
-        return Physics.Raycast(ray, distance, layer);
-    }
-    public static bool ShootRayToPosition(Transform transform, out RaycastHit hit, Vector3 position, float distance, int layer) {
-        position.y = transform.position.y;
-        Ray ray = new(position + Vector3.up * distance / 2, Vector3.down);
-        return Physics.Raycast(ray, out hit, distance, layer);
-    }
 }
