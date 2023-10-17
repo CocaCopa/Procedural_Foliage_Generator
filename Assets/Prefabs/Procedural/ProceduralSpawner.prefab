@@ -60,6 +60,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gizmosColor: {r: 0.9811321, g: 0.9811321, b: 0.9811321, a: 1}
+  logDistances: 0
+  replaceInspectedObject: 0
 --- !u!114 &2374888818521793295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,23 +74,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 242af6831a4d3d64f8c29ffb6fae1407, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primitive: {fileID: 0}
-  child: {fileID: 0}
+  primitives: []
+  children: []
   foliageHolderName: FoliageHolder
   foliageLayer: Default
   foliageTag: Untagged
   spawnOnLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   intensity: 1000
   marginX: 2
   marginZ: 2
-  minimumDistance: 2
-  maximumDistance: 3
   spreadDistance: 10
+  minParentBlankArea: 4
+  maxParentBlankArea: 8
   numberOfChildren: 4
+  parentDistanceMode: 0
   distanceFromParent: 3
-  minDistance: 2
-  maxDistance: 3
+  minChildBlankArea: 3
+  maxChildBlankArea: 5
   minScale: 0.68
   maxScale: 0.85

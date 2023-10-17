@@ -16,6 +16,7 @@ public class ProceduralSpawnerEditor : Editor {
         BoxColliderKeepEnabled();
         DefaultInformation();
         ManageValues();
+        NonNegativeValues();
     }
 
     private void FindTargetScript() {
@@ -58,13 +59,52 @@ public class ProceduralSpawnerEditor : Editor {
             Debug.LogWarning("Distance from parent cannot be more than the spread distance");
             Debug.Log("It is recommended to leave a noticeable margin between these 2 values, or else there's a high chance no child foliage will spawn");
         }
-        if (spawner.minDistance > spawner.maxDistance) {
-            spawner.minDistance = spawner.maxDistance;
+        if (spawner.minChildBlankArea > spawner.maxChildBlankArea) {
+            spawner.minChildBlankArea = spawner.maxChildBlankArea;
             Debug.LogWarning("Minimum distance cannot be more than the maximum distance");
         }
-        if (spawner.minimumDistance > spawner.maximumDistance) {
-            spawner.minimumDistance = spawner.maximumDistance;
+        if (spawner.minParentBlankArea > spawner.maxParentBlankArea) {
+            spawner.minParentBlankArea = spawner.maxParentBlankArea;
             Debug.LogWarning("Minimum distance cannot be more than the maximum distance");
+        }
+    }
+
+    private void NonNegativeValues() {
+        if (spawner.intensity < 0) {
+            spawner.intensity = 0;
+        }
+        if (spawner.marginX < 0) {
+            spawner.marginX = 0;
+        }
+        if (spawner.marginZ < 0) {
+            spawner.marginZ = 0;
+        }
+        if (spawner.minParentBlankArea < 0) {
+            spawner.minParentBlankArea = 0;
+        }
+        if (spawner.maxParentBlankArea < 0) {
+            spawner.maxParentBlankArea = 0;
+        }
+        if (spawner.spreadDistance < 0) {
+            spawner.spreadDistance = 0;
+        }
+        if (spawner.numberOfChildren < 0) {
+            spawner.numberOfChildren = 0;
+        }
+        if (spawner.distanceFromParent < 0) {
+            spawner.distanceFromParent = 0;
+        }
+        if (spawner.minChildBlankArea < 0) {
+            spawner.minChildBlankArea = 0;
+        }
+        if (spawner.maxChildBlankArea < 0) {
+            spawner.maxChildBlankArea = 0;
+        }
+        if (spawner.minScale < 0) {
+            spawner.minScale = 0;
+        }
+        if (spawner.maxScale < 0) {
+            spawner.maxScale = 0;
         }
     }
 }
