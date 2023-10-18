@@ -64,8 +64,8 @@ Getting Started
    In the Inspector, you'll find the following fields:
 
    1. Primitives: Assign the parent objects (primitives) you want to use for generating foliage.
-   2. Children: Assign the child objects you want to use for generating foliage.
-      Each time a parent or child is set to spawn, the system will randomly select an object 
+   2. Children: Assign the child objects you want to use for generating foliage.  
+      Each time a parent or child is set to spawn, the system will randomly select an object  
       from their respective lists.
 
 3. Customizing Your Foliage:
@@ -137,24 +137,24 @@ allows you to keep your Hierarchy organized and easily locate the generated foli
 ------------------
 Inspector Buttons
 ------------------
-_Generate:_ The tool will generate foliage based on the given values
+_Generate:_ The tool will generate foliage based on the given values  
 _Delete  :_ The tool locates and removes a GameObject with the name specified in the 'FoliageHolderName' field.
 
 
 ---------------------------------
 Frequently Asked Questions (FAQ)
 ---------------------------------
-__Q: Why isn't my generator spawning any foliage?__
+__Q: Why isn't my generator spawning any foliage?__  
 A: Ensure that the generator's bounding box, defined by its box collider, encompasses valid
    ground within the dimensions of the box collider.
 
-__Q: Can I run the generator in the same area multiple times to spawn different types of foliage?__
+__Q: Can I run the generator in the same area multiple times to spawn different types of foliage?__  
 A: Yes, you can. To do so, assign all generated foliage to the same dedicated layer. This allows
    the tool to detect and avoid previously generated foliage. If you assign each generation to
    a different layer, it might cause the tool not to avoid earlier generations correctly.
 
-__Q: When I generate foliage in an area that already has existing foliage, the new generation__
-   overlaps with the previous one. What can I do to avoid this?
+__Q: When I generate foliage in an area that already has existing foliage, the new generation
+   overlaps with the previous one. What can I do to avoid this?__  
 A: While the generator doesn't require colliders for detecting foliage, this may not apply when
    you want to generate different foliage in an area that's already occupied. For objects like
    trees, collisions usually won't be an issue, as they typically have colliders. However, for
