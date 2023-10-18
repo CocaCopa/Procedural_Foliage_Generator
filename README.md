@@ -88,32 +88,33 @@ Customize Your Tool
     allows you to keep your Hierarchy organized and easily locate the generated foliage.
 
 2.  __Foliage Layer:__
+
     Here, you can assign a layer that will be assigned to every generated foliage object. This
     is useful for managing interactions or visibility settings in your project.
 
-3.  __Foliage Tag:__
+4.  __Foliage Tag:__
     This field allows you to assign a tag to every generated foliage object. Tags can be used to
     identify and manage objects with similar characteristics, making it easier to work with them
     in your project.
 
-4.  __Spawn On Layer:__
+5.  __Spawn On Layer:__
     Use this field to specify the layer on which the foliage should be spawned. This helps you
     control where the generated foliage appears in your scene, providing flexibility in scene
     design.
 
-5.  __Intensity:__
+6.  __Intensity:__
     The 'Intensity' setting controls the density of foliage in the specified area. Adjust this
     value to achieve the desired level of coverage for your environment.
 
-6.  __MarginX and MarginZ:__
+7.  __MarginX and MarginZ:__
     These settings enable you to cut out a certain distance on the X and Z axes. This can be
     helpful for creating open areas within your foliage-covered landscape.
 
-7.  __Spread Distance:__
+8.  __Spread Distance:__
     The spread distance of children foliage around their parent. Adjust this value to control
     how far apart children foliage objects are placed around their parent.
 
-8.  __Min Parent Blank Area / Max Parent Blank Area:__
+9.  __Min Parent Blank Area / Max Parent Blank Area:__
     These settings determine the minimum and maximum distances from each parent at which other
     parents cannot spawn. Use these values to create diverse and natural-looking layouts.
 
