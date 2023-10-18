@@ -63,7 +63,8 @@ Getting Started
    In the Inspector, you'll find the following fields:
 
    1. Primitives: Assign the parent objects (primitives) you want to use for generating foliage.
-   2. Children: Assign the child objects you want to use for generating foliage.  
+   2. Children: Assign the child objects you want to use for generating foliage.
+
    Each time a parent or child is set to spawn, the system will randomly select an object  
    from their respective lists.
 
