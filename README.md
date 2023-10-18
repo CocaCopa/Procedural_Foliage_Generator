@@ -35,7 +35,7 @@ How It Works
 
 - Child Foliage Generation
 1. __Generation area:__
-   - For each parent, a ring torus is generated around it. The outer radius of the torus is defined by the
+   - For each parent, a virtual ring torus is generated around it. The outer radius of the torus is defined by the
      'spreadDistance' value, and the inner radius is defined by the 'distanceFromParent' value.
    - Raycasts will only be allowed to save their calculated positions if they fall inside that torus.
 
