@@ -13,7 +13,7 @@ life without the complexity.
 ------------
 How It Works
 ------------
-Parent foliage
+__-Parent Foliage Generation-__
 1. Generation area:
    - When you click the 'Generate' button, the tool will cast raycasts at random positions, from the collider's
      upper face downward to the collider's lower face.
@@ -33,7 +33,7 @@ Parent foliage
    - Every other potential parent position, will be checked to ensure it's outside of any of the previously
      generated parent circles. If it is, the tool will spawn another parent foliage at that position.
 
------------------------------------------------- Child foliage ------------------------------------------------
+__-Child Foliage Generation-__
 1. Generation area:
    - For each parent, a ring torus is generated around it. The outer radius of the torus is defined by the
      'spreadDistance' value, and the inner radius is defined by the 'distanceFromParent' value.
