@@ -23,7 +23,7 @@ How It Works
    - Initially, all raycasts will search for layers where foliage cannot spawn. If such a layer is detected,
      that raycast's position will be completely ignored.
    - If no invalid layers are found, the tool will proceed by casting a new set of raycasts, this time searching
-     for valid ground. It will save the positions where valid ground is found.
+     for valid ground. It will then save the positions where valid ground is found.
 
 3. __Validity of position:__
    - Once the tool has the position for the foliage, it will spawn a foliage object randomly selected from the
