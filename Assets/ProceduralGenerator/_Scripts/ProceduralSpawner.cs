@@ -30,12 +30,12 @@ public class ProceduralSpawner : MonoBehaviour {
     public float marginZ;
 
     [Header("--- Parent Folliage ---")]
-    [Tooltip("Distance at which new parents cannot spawn near existing parents.")]
+    [Tooltip("Controls how far a parent should spread new seeds that will generate children")]
     public float spreadDistance;
     [Space(5)]
     [Tooltip("Distance at which new parents cannot spawn near existing parents.")]
     public float minParentBlankArea;
-    [Tooltip("Distance from each parent, at which other parents cannot spawn")]
+    [Tooltip("Distance at which new parents cannot spawn near existing parents.")]
     public float maxParentBlankArea;
 
     [Header("--- Child Folliage ---")]
