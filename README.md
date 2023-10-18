@@ -57,7 +57,6 @@ Getting Started
 
    Locate the 'ProceduralSpawner' prefab in your Unity project assets.
    Drag and drop the 'ProceduralSpawner' prefab into your Unity scene.
-   Configuring the Spawner:
 
 2. Select the 'ProceduralSpawner' in your Hierarchy or Project panel.
 
