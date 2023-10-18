@@ -125,11 +125,11 @@ allows you to keep your Hierarchy organized and easily locate the generated foli
     Set the minimum distance between children and their parent. This ensures that child foliage
     objects are distributed evenly and naturally within the parent's area.
 
-12. __Min Child Blank Area and Max Child Blank Area:__  
+12. __Min Child Blank Area / Max Child Blank Area:__  
     These settings determine the minimum and maximum distances from each child at which other
     children cannot spawn. Use these values to create diverse and natural-looking layouts.
 
-13. __Min Child Scale and Max Child Scale:__  
+13. __Min Child Scale / Max Child Scale:__  
     These settings allow you to define the minimum and maximum scales for children foliage.
     Adjusting these values gives you control over the size variation within the child foliage.
 
