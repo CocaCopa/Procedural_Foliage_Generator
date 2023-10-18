@@ -43,8 +43,8 @@ life without the complexity.
 
 ------------------------------------------------ Child foliage ------------------------------------------------
 1. Generation area:
-   - For each parent, a ring torus is generated around it. The outer radius of the torus is defined by the
-     'spreadDistance' value, and the inner radius is defined by the 'distanceFromParent' value.
+   - For each parent, a virtual ring torus is generated around it. The outer radius of the torus is defined by
+     the 'spreadDistance' value, and the inner radius is defined by the 'distanceFromParent' value.
    - Raycasts will only be allowed to save their calculated positions if they fall inside that torus.
 
 2. Search for valid ground:
