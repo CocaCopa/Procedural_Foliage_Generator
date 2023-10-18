@@ -88,6 +88,12 @@ public class ProceduralSpawnerEditor : Editor {
         if (spawner.spreadDistance < 0) {
             spawner.spreadDistance = 0;
         }
+        if (spawner.minParentScale < 0) {
+            spawner.minParentScale = 0;
+        }
+        if (spawner.maxParentScale < 0) {
+            spawner.maxParentScale = 0;
+        }
         if (spawner.numberOfChildren < 0) {
             spawner.numberOfChildren = 0;
         }
@@ -100,11 +106,11 @@ public class ProceduralSpawnerEditor : Editor {
         if (spawner.maxChildBlankArea < 0) {
             spawner.maxChildBlankArea = 0;
         }
-        if (spawner.minScale < 0) {
-            spawner.minScale = 0;
+        if (spawner.minChildScale < 0) {
+            spawner.minChildScale = 0;
         }
-        if (spawner.maxScale < 0) {
-            spawner.maxScale = 0;
+        if (spawner.maxChildScale < 0) {
+            spawner.maxChildScale = 0;
         }
     }
 }

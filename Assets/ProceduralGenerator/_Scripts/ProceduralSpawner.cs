@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider), typeof(ProceduralSpawnerGizmos))]
@@ -37,6 +38,11 @@ public class ProceduralSpawner : MonoBehaviour {
     public float minParentBlankArea;
     [Tooltip("Distance at which new parents cannot spawn near existing parents.")]
     public float maxParentBlankArea;
+    [Space(5)]
+    [Tooltip("Minimum scale of parent foliage")]
+    public float minParentScale;
+    [Tooltip("Maximum scale of parent foliage")]
+    public float maxParentScale;
 
     [Header("--- Child Folliage ---")]
     [Tooltip("Maximum number of children a parent can spawn")]
@@ -53,9 +59,9 @@ public class ProceduralSpawner : MonoBehaviour {
     public float maxChildBlankArea;
     [Space(5)]
     [Tooltip("Minimum scale of children foliage")]
-    public float minScale;
+    public float minChildScale;
     [Tooltip("Maximum scale of children foliage")]
-    public float maxScale;
+    public float maxChildScale;
 
     private enum ParentDistanceMode { AllParents, MyParent };
     private float boxLimitsX;
@@ -120,7 +126,7 @@ public class ProceduralSpawner : MonoBehaviour {
             if (Utilities.OutOfBounds(transform, parentPosition, boxLimitsX, boxLimitsZ)) {
                 continue;
             }
-            if (ShootRayToPosition(parentPosition, raycastDistance, ~spawnOnLayer)) {
+            if (InvalidPosition(parentPosition)) {
                 continue;
             }
 
@@ -132,7 +138,7 @@ public class ProceduralSpawner : MonoBehaviour {
 
             int randomParentIndex = Random.Range(0, primitives.Length);
             GameObject m_obj = Instantiate(primitives[randomParentIndex]);
-            SetObjectValues(m_obj, parent, parentPosition, Vector2.one);
+            SetObjectValues(m_obj, parent, parentPosition, new(minParentScale, maxParentScale));
             positionsOfParents.Add(parentPosition);
             radiiOfParents.Add(Random.Range(minParentBlankArea, maxParentBlankArea));
             generatedParents.Add(m_obj);
@@ -151,7 +157,7 @@ public class ProceduralSpawner : MonoBehaviour {
                 if (Utilities.OutOfBounds(transform, childPosition, boxLimitsX, boxLimitsZ)) {
                     continue;
                 }
-                if (ShootRayToPosition(childPosition, raycastDistance, ~spawnOnLayer)) {
+                if (InvalidPosition(childPosition)) {
                     continue;
                 }
                 if (ChildCloseToParent(childPosition, positionsOfParents[i])) {
@@ -166,7 +172,7 @@ public class ProceduralSpawner : MonoBehaviour {
 
                 int randomChildIndex = Random.Range(0, children.Length);
                 GameObject m_child = Instantiate(children[randomChildIndex]);
-                SetObjectValues(m_child, m_obj, childPosition, new(minScale, maxScale));
+                SetObjectValues(m_child, m_obj, childPosition, new(minChildScale, maxChildScale));
                 positionsOfChildren.Add(childPosition);
                 radiiOfChildren.Add(Random.Range(minChildBlankArea, maxChildBlankArea));
             }
@@ -204,11 +210,19 @@ public class ProceduralSpawner : MonoBehaviour {
         childObj.layer = LayerMask.NameToLayer(foliageLayer);
     }
 
-    private bool ShootRayToPosition(Vector3 position, float distance, int layer) {
-        position.y = transform.position.y;
-        Ray ray = new(position + Vector3.up * distance / 2, Vector3.down);
-        return Physics.Raycast(ray, distance, layer);
+    private bool InvalidPosition(Vector3 position) {
+        if (ShootRayToPosition(out RaycastHit invalidHit, position, raycastDistance, ~spawnOnLayer)) {
+            if (ShootRayToPosition(out RaycastHit validHit, position, raycastDistance, spawnOnLayer)) {
+                if (invalidHit.point.y > validHit.point.y) {
+                    return true;
+                }
+            }
+            else
+                return true;
+        }
+        return false;
     }
+
     private bool ShootRayToPosition(out RaycastHit hit, Vector3 position, float distance, int layer) {
         position.y = transform.position.y;
         Ray ray = new(position + Vector3.up * distance / 2, Vector3.down);
