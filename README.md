@@ -68,8 +68,8 @@ Getting Started
    Each time a parent or child is set to spawn, the system will randomly select an object  
    from their respective lists.
 
-3. Customizing Your Foliage:
-   With your primitives and children assigned, you're ready to customize your foliage generation.
+3. Customizing Your Foliage:  
+With your primitives and children assigned, you're ready to customize your foliage generation.
 
 -------------------
 Customize Your Tool
