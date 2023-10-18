@@ -1,11 +1,3 @@
-Jump to sections using Ctl+F
-1. Introduction
-2. How It Works
-3. Getting Started
-4. Customize Your Foliage Generator
-5. Inspector Buttons
-6. Frequently Asked Questions (FAQ)
-
 -------------
 Introduction
 -------------
@@ -83,63 +75,62 @@ Getting Started
 -------------------
 Customize Your Tool
 -------------------
-1.  Foliage Holder Name:  
+1.  __Foliage Holder Name:__  
 Specify the name of the parent GameObject that will hold all the generated foliage. This
 allows you to keep your Hierarchy organized and easily locate the generated foliage.
 
 2.  __Foliage Layer:__  
-
     Here, you can assign a layer that will be assigned to every generated foliage object. This
     is useful for managing interactions or visibility settings in your project.
 
-4.  __Foliage Tag:__
+4.  __Foliage Tag:__  
     This field allows you to assign a tag to every generated foliage object. Tags can be used to
     identify and manage objects with similar characteristics, making it easier to work with them
     in your project.
 
-5.  __Spawn On Layer:__
+5.  __Spawn On Layer:__  
     Use this field to specify the layer on which the foliage should be spawned. This helps you
     control where the generated foliage appears in your scene, providing flexibility in scene
     design.
 
-6.  __Intensity:__
+6.  __Intensity:__  
     The 'Intensity' setting controls the density of foliage in the specified area. Adjust this
     value to achieve the desired level of coverage for your environment.
 
-7.  __MarginX and MarginZ:__
+7.  __MarginX and MarginZ:__  
     These settings enable you to cut out a certain distance on the X and Z axes. This can be
     helpful for creating open areas within your foliage-covered landscape.
 
-8.  __Spread Distance:__
+8.  __Spread Distance:__  
     The spread distance of children foliage around their parent. Adjust this value to control
     how far apart children foliage objects are placed around their parent.
 
-9.  __Min Parent Blank Area / Max Parent Blank Area:__
+9.  __Min Parent Blank Area / Max Parent Blank Area:__  
     These settings determine the minimum and maximum distances from each parent at which other
     parents cannot spawn. Use these values to create diverse and natural-looking layouts.
 
-13. __Min Parent Scale / Max Parent Scale:__
+13. __Min Parent Scale / Max Parent Scale:__  
     These settings allow you to define the minimum and maximum scales for parent foliage.
     Adjusting these values gives you control over the size variation within the parent foliage.
 
-9.  __Number of Children:__
+9.  __Number of Children:__  
     Specify the maximum number of children a parent can spawn. This setting allows you to control
     the quantity and density of smaller foliage objects around parents.
 
-10. __Parent Distance Mode:__
+10. __Parent Distance Mode:__  
     Choose between two modes for child placement. "All Parents" ensures children maintain the
     desired distance from all parents, while "Own Parent" requires children to keep a minimum
     distance only from their own parent.
 
-11. __Distance From Parent:__
+11. __Distance From Parent:__  
     Set the minimum distance between children and their parent. This ensures that child foliage
     objects are distributed evenly and naturally within the parent's area.
 
-12. __Min Child Blank Area and Max Child Blank Area:__
+12. __Min Child Blank Area and Max Child Blank Area:__  
     These settings determine the minimum and maximum distances from each child at which other
     children cannot spawn. Use these values to create diverse and natural-looking layouts.
 
-13. __Min Child Scale and Max Child Scale:__
+13. __Min Child Scale and Max Child Scale:__  
     These settings allow you to define the minimum and maximum scales for children foliage.
     Adjusting these values gives you control over the size variation within the child foliage.
 
