@@ -84,8 +84,8 @@ Getting Started
 Customize Your Tool
 -------------------
 1.  Foliage Holder Name:
-    Specify the name of the parent GameObject that will hold all the generated foliage. This
-    allows you to keep your Hierarchy organized and easily locate the generated foliage.
+Specify the name of the parent GameObject that will hold all the generated foliage. This
+allows you to keep your Hierarchy organized and easily locate the generated foliage.
 
 2.  __Foliage Layer:__
 
