@@ -13,19 +13,19 @@ life without the complexity.
 ------------
 How It Works
 ------------
-__-Parent Foliage Generation-__
-1. Generation area:
+- Parent Foliage Generation
+1. __Generation area:__
    - When you click the 'Generate' button, the tool will cast raycasts at random positions, from the collider's
      upper face downward to the collider's lower face.
    - The number of casts depends on the value set in the 'intensity' field.
 
-2. Search for valid ground:
+2. __Search for valid ground:__
    - Initially, all raycasts will search for layers where foliage cannot spawn. If such a layer is detected,
      that raycast's position will be completely ignored.
    - If no invalid layers are found, the tool will proceed by casting a new set of raycasts, this time searching
      for valid ground. It will save the positions where valid ground is found.
 
-3. Validity of position:
+3. __Validity of position:__
    - Once the tool has the position for the foliage, it will spawn a foliage object randomly selected from the
      'primitives' list.
    - It will then generate a virtual circle around that foliage with a random radius between the
@@ -33,16 +33,16 @@ __-Parent Foliage Generation-__
    - Every other potential parent position, will be checked to ensure it's outside of any of the previously
      generated parent circles. If it is, the tool will spawn another parent foliage at that position.
 
-__-Child Foliage Generation-__
-1. Generation area:
+- Child Foliage Generation
+1. __Generation area:__
    - For each parent, a ring torus is generated around it. The outer radius of the torus is defined by the
      'spreadDistance' value, and the inner radius is defined by the 'distanceFromParent' value.
    - Raycasts will only be allowed to save their calculated positions if they fall inside that torus.
 
-2. Search for valid ground:
-   Similar to the procedure for parent foliage, child foliage follows the same process.
+2. __Search for valid ground:__  
+Similar to the procedure for parent foliage, child foliage follows the same process.
 
-3. Validity of position:
+3. __Validity of position:__
    - Similar to parent foliage, all child foliage generates a virtual circle around them to prevent other
      child foliage from spawning inside. The radius of this circle is determined by the 'minChildBlankArea'
      and 'maxChildBlankArea' values.
