@@ -63,7 +63,7 @@ public class ProceduralSpawner : MonoBehaviour {
     [Tooltip("Maximum scale of children foliage")]
     public float maxChildScale;
 
-    private enum ParentDistanceMode { AllParents, MyParent };
+    private enum ParentDistanceMode { AllParents, OwnParent };
     private float boxLimitsX;
     private float boxLimitsZ;
     private float raycastDistance;
@@ -185,7 +185,7 @@ public class ProceduralSpawner : MonoBehaviour {
             case ParentDistanceMode.AllParents:
             tooClose = Utilities.IsPositionCloseToAnyPosition(childPosition, positionsOfParents, distanceFromParent);
             break;
-            case ParentDistanceMode.MyParent:
+            case ParentDistanceMode.OwnParent:
             tooClose = Vector3.Distance(childPosition, parentPosition) <= distanceFromParent;
             break;
         }
